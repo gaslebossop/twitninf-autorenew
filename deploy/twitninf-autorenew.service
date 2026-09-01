@@ -1,0 +1,43 @@
+[Unit]
+Description=TwitNinf — renouvellement automatique des abonnements (portefeuilles NF)
+Documentation=file:///home/debian/autorenew/README.md
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=debian
+Group=debian
+
+# ARW_PGURI vit ici, jamais dans l'unité : le fichier est en 0600 et n'entre
+# pas dans le journal, contrairement à une ligne Environment=.
+EnvironmentFile=/etc/twitninf/autorenew.env
+
+ExecStart=/usr/local/bin/twitninf-autorenew
+
+Restart=always
+RestartSec=10
+
+# Le démon écrit sur stdout/stderr ; journalctl -u twitninf-autorenew suffit.
+StandardOutput=journal
+StandardError=journal
+
+# Le service ne touche que Postgres : rien à écrire sur le disque, aucun
+# privilège à conserver.
+NoNewPrivileges=true
+PrivateTmp=true
+# PrivateDevices fournit un /dev minimal qui contient /dev/urandom — la source
+# des identifiants de transaction. Rien d'autre n'est nécessaire.
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+
+[Install]
+WantedBy=multi-user.target

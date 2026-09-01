@@ -1,0 +1,4 @@
+# Le dépôt est édité sous Windows mais compilé et exécuté sur un VPS Debian :
+# tout est stocké et restitué en LF. Un CRLF sur test/run-tests.sh casserait
+# son shebang, et le Makefile ne survit pas non plus aux retours Windows.
+* text=auto eol=lf
